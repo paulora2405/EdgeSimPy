@@ -25,7 +25,7 @@ class User(ComponentManager, Agent):
     _instances = []
     _object_count = 0
 
-    def __init__(self, obj_id: int = None) -> object:
+    def __init__(self, obj_id: Optional[int] = None):
         """Creates an User object.
 
         Args:
@@ -44,21 +44,21 @@ class User(ComponentManager, Agent):
         self.id = obj_id
 
         # User coordinates
-        self.coordinates_trace = []
-        self.coordinates = None
+        self.coordinates_trace: list[Tuple[int, int]] = []
+        self.coordinates: Tuple[int, int]
 
         # List of applications accessed by the user
-        self.applications = []
+        self.applications: list[Application] = []
 
         # Reference to the base station the user is connected to
-        self.base_station = None
+        self.base_station: BaseStation
 
         # User access metadata
         self.making_requests = {}
         self.access_patterns = {}
 
         # User mobility model
-        self.mobility_model = None
+        self.mobility_model: Callable[[User], None]
         self.mobility_model_parameters = {}
 
         # List of metadata from applications accessed by the user
@@ -67,8 +67,11 @@ class User(ComponentManager, Agent):
         self.delay_slas = {}
 
         # Model-specific attributes (defined inside the model's "initialize()" method)
-        self.model = None
-        self.unique_id = None
+        self.model: Model
+        self.unique_id: int
+
+        # Custom user mobility attributes
+        self.point_of_interest: Optional[InterestPoint] = None
 
     def _to_dict(self) -> dict:
         """Method that overrides the way the object is formatted to JSON."
@@ -89,15 +92,24 @@ class User(ComponentManager, Agent):
                 "delay_slas": copy.deepcopy(self.delay_slas),
                 "communication_paths": copy.deepcopy(self.communication_paths),
                 "making_requests": copy.deepcopy(self.making_requests),
-                "mobility_model_parameters": copy.deepcopy(self.mobility_model_parameters)
-                if self.mobility_model_parameters
-                else {},
+                "mobility_model_parameters": (
+                    copy.deepcopy(self.mobility_model_parameters) if self.mobility_model_parameters else {}
+                ),
             },
             "relationships": {
                 "access_patterns": access_patterns,
                 "mobility_model": self.mobility_model.__name__,
                 "applications": [{"class": type(app).__name__, "id": app.id} for app in self.applications],
-                "base_station": {"class": type(self.base_station).__name__, "id": self.base_station.id},
+                "base_station": (
+                    {"class": type(self.base_station).__name__, "id": self.base_station.id}
+                    if self.base_station is not None
+                    else {}
+                ),
+                "point_of_interest": (
+                    {"id": self.point_of_interest.id, "name": self.point_of_interest.name}
+                    if self.point_of_interest is not None
+                    else {}
+                ),
             },
         }
         return dictionary
@@ -127,6 +139,17 @@ class User(ComponentManager, Agent):
         """Method that executes the events involving the object at each time step."""
         # Updating user access
         current_step = self.model.schedule.steps + 1
+
+        # doesn't have a poi yet
+        if self.point_of_interest is None:
+            # Random 60% chance of getting a point of interest
+            if random.randint(0, 100) < 60:
+                pois_in_peak = InterestPoint.all_in_peak()
+                self.point_of_interest = random.choice(pois_in_peak) if len(pois_in_peak) > 0 else None
+        # already has an poi, but it isn't in peak anymore
+        elif not self.point_of_interest.is_in_peak:
+            self.point_of_interest = None
+
         for app in self.applications:
             last_access = self.access_patterns[str(app.id)].history[-1]
 
@@ -172,7 +195,7 @@ class User(ComponentManager, Agent):
                     self.communication_paths[str(application.id)] = []
                     self._compute_delay(app=application)
 
-    def _compute_delay(self, app: object, metric: str = "latency") -> int:
+    def _compute_delay(self, app: Application, metric: str = "latency") -> int:
         """Computes the delay of an application accessed by the user.
 
         Args:
@@ -205,7 +228,7 @@ class User(ComponentManager, Agent):
 
         return delay
 
-    def set_communication_path(self, app: object, communication_path: list = []) -> list:
+    def set_communication_path(self, app: Application, communication_path: list = []) -> list:
         """Updates the set of links used during the communication of user and its application.
 
         Args:
@@ -262,7 +285,7 @@ class User(ComponentManager, Agent):
 
         return self.communication_paths[str(app.id)]
 
-    def _connect_to_application(self, app: object, delay_sla: float) -> object:
+    def _connect_to_application(self, app: Application, delay_sla: float):
         """Connects the user to a given application, establishing all the relationship attributes in both objects.
 
         Args:
