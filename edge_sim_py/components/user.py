@@ -1,12 +1,17 @@
 """ Contains user-related functionality."""
+
 # EdgeSimPy components
-from edge_sim_py.component_manager import ComponentManager
-from edge_sim_py.components.topology import Topology
-from edge_sim_py.components.base_station import BaseStation
-from edge_sim_py.components.network_switch import NetworkSwitch
+import random
+from typing import Callable, Optional, Tuple
+from component_manager import ComponentManager
+from components.topology import Topology
+from components.base_station import BaseStation
+from components.network_switch import NetworkSwitch
+from components.application import Application
+from components.interest_point import InterestPoint
 
 # Mesa modules
-from mesa import Agent
+from mesa import Agent, Model
 
 # Python libraries
 import copy

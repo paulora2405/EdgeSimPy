@@ -1,6 +1,7 @@
 """ Contains a method that randomly defines the initial placement of container registries."""
+
 # EdgeSimPy component builder helpers
-from edge_sim_py.dataset_generator.builder_helpers import provision_container_registry
+from dataset_generator.builder_helpers import provision_container_registry
 
 # Python libraries
 from random import sample

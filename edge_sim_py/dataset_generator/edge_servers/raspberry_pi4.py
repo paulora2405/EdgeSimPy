@@ -6,8 +6,9 @@ Please notice that disk capacity is not informed in [1]. Accordingly, we arbitra
     raspberry Pi using Deep-CNN." In 2020 International Congress on Human-Computer Interaction,
     Optimization and Robotic Applications (HORA), pp. 1-5. IEEE, 2020.
 """
+
 # EdgeSimPy components
-from edge_sim_py.components.edge_server import EdgeServer
+from components.edge_server import EdgeServer
 
 
 def raspberry_pi4() -> object:

@@ -1,8 +1,9 @@
 """ Contains all the simulation management functionality."""
+
 # EdgeSimPy components
-from edge_sim_py.component_manager import ComponentManager
-from edge_sim_py.components import *
-from edge_sim_py.activation_schedulers import *
+from component_manager import ComponentManager
+from components import *
+from activation_schedulers import *
 
 # Mesa modules
 from mesa import Model, Agent

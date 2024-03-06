@@ -1,10 +1,11 @@
 """ Contains edge-server-related functionality."""
+
 # EdgeSimPy components
-from edge_sim_py.component_manager import ComponentManager
-from edge_sim_py.components.network_flow import NetworkFlow
-from edge_sim_py.components.container_registry import ContainerRegistry
-from edge_sim_py.components.container_image import ContainerImage
-from edge_sim_py.components.container_layer import ContainerLayer
+from component_manager import ComponentManager
+from components.network_flow import NetworkFlow
+from components.container_registry import ContainerRegistry
+from components.container_image import ContainerImage
+from components.container_layer import ContainerLayer
 
 # Mesa modules
 from mesa import Agent
@@ -130,12 +131,12 @@ class EdgeServer(ComponentManager, Agent):
             },
             "relationships": {
                 "power_model": self.power_model.__name__ if self.power_model else None,
-                "base_station": {"class": type(self.base_station).__name__, "id": self.base_station.id}
-                if self.base_station
-                else None,
-                "network_switch": {"class": type(self.network_switch).__name__, "id": self.network_switch.id}
-                if self.network_switch
-                else None,
+                "base_station": (
+                    {"class": type(self.base_station).__name__, "id": self.base_station.id} if self.base_station else None
+                ),
+                "network_switch": (
+                    {"class": type(self.network_switch).__name__, "id": self.network_switch.id} if self.network_switch else None
+                ),
                 "services": [{"class": type(service).__name__, "id": service.id} for service in self.services],
                 "container_layers": [{"class": type(layer).__name__, "id": layer.id} for layer in self.container_layers],
                 "container_images": [{"class": type(image).__name__, "id": image.id} for image in self.container_images],

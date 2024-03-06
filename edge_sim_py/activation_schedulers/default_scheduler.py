@@ -1,6 +1,7 @@
 """ Contains the EdgeSimPy's default agent activation scheduler."""
+
 # EdgeSimPy components
-from edge_sim_py.components import *
+from components import *
 
 # Mesa modules
 from mesa.time import BaseScheduler as MesaBaseScheduler

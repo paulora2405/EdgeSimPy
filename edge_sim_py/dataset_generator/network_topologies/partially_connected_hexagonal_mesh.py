@@ -3,9 +3,10 @@
 [1] Zilic, Josip, Atakan Aral, and Ivona Brandic. "EFPO: Energy efficient and failure predictive edge offloading."
     Proceedings of the 12th IEEE/ACM International Conference on Utility and Cloud Computing. 2019.
 """
+
 # EdgeSimPy components
-from edge_sim_py.components.topology import Topology
-from edge_sim_py.components.network_link import NetworkLink
+from components.topology import Topology
+from components.network_link import NetworkLink
 
 # Python libraries
 import random

@@ -1,6 +1,7 @@
 """ Contains a method that defines the initial placement of container registries based on the well-known Best Fit algorithm."""
+
 # EdgeSimPy component builder helpers
-from edge_sim_py.dataset_generator.builder_helpers import provision_container_registry
+from dataset_generator.builder_helpers import provision_container_registry
 
 
 def best_fit_registries(container_registry_specifications: list, servers: list):

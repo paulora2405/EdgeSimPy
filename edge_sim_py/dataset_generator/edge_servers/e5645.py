@@ -6,8 +6,9 @@ Please notice that disk capacity is not informed in [1]. Accordingly, we arbitra
     "Epcaware: a game-based, energy, performance and cost efficient resource management technique for multi-access
     edge computing." IEEE Transactions on Services Computing (2020).
 """
+
 # EdgeSimPy components
-from edge_sim_py.components.edge_server import EdgeServer
+from components.edge_server import EdgeServer
 
 
 def e5645() -> object:

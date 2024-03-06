@@ -2,8 +2,9 @@
 
 [1] Bai, Fan, and Ahmed Helmy. "A Survey of Mobility Models in Wireless Adhoc Networks", pp. 1-29. 2004.
 """
+
 # EdgeSimPy components
-from edge_sim_py.components.base_station import BaseStation
+from components.base_station import BaseStation
 
 # Python libraries
 import random

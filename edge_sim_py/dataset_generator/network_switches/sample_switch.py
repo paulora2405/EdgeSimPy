@@ -3,9 +3,10 @@
 [1] Conterato, Marcelo da Silva, et al. "Reducing energy consumption in SDN-based data center
     networks through flow consolidation strategies." ACM/SIGAPP Symposium on Applied Computing. 2019.
 """
+
 # EdgeSimPy components
-from edge_sim_py.components.network_switch import NetworkSwitch
-from edge_sim_py.components.power_models.network.conterato_network_power_model import ConteratoNetworkPowerModel
+from components.network_switch import NetworkSwitch
+from components.power_models.network.conterato_network_power_model import ConteratoNetworkPowerModel
 
 
 def sample_switch() -> object:

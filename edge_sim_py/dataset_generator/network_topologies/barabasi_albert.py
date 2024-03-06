@@ -2,9 +2,10 @@
 
 [1] Barabási, Albert-László, and Réka Albert. "Emergence of scaling in random networks." Science (1999): 509-512.
 """
+
 # EdgeSimPy components
-from edge_sim_py.components.topology import Topology
-from edge_sim_py.components.network_link import NetworkLink
+from components.topology import Topology
+from components.network_link import NetworkLink
 
 # Python libraries
 import random

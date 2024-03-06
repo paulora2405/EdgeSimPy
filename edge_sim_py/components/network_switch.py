@@ -1,6 +1,7 @@
 """ Contains network-switch-related functionality."""
+
 # EdgeSimPy components
-from edge_sim_py.component_manager import ComponentManager
+from component_manager import ComponentManager
 
 # Mesa modules
 from mesa import Agent
@@ -74,9 +75,9 @@ class NetworkSwitch(ComponentManager, Agent):
                     {"class": type(edge_server).__name__, "id": edge_server.id} for edge_server in self.edge_servers
                 ],
                 "links": [{"class": type(link).__name__, "id": link.id} for link in self.links],
-                "base_station": {"class": type(self.base_station).__name__, "id": self.base_station.id}
-                if self.base_station
-                else None,
+                "base_station": (
+                    {"class": type(self.base_station).__name__, "id": self.base_station.id} if self.base_station else None
+                ),
             },
         }
         return dictionary

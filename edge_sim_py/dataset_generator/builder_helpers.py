@@ -1,8 +1,9 @@
 """Contains a set of helper methods used when creating datasets for EdgeSimPy."""
+
 # EdgeSimPy components
-from edge_sim_py.components.container_registry import ContainerRegistry
-from edge_sim_py.components.container_image import ContainerImage
-from edge_sim_py.components.container_layer import ContainerLayer
+from components.container_registry import ContainerRegistry
+from components.container_image import ContainerImage
+from components.container_layer import ContainerLayer
 
 
 def create_container_registries(container_image_specifications: list, container_registry_specifications: list) -> list:

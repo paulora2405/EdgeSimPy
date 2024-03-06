@@ -1,10 +1,11 @@
 """ Contains container-registry-related functionality."""
+
 # EdgeSimPy components
-from edge_sim_py.component_manager import ComponentManager
-from edge_sim_py.components.container_image import ContainerImage
-from edge_sim_py.components.container_layer import ContainerLayer
-from edge_sim_py.components.network_flow import NetworkFlow
-from edge_sim_py.components.service import Service
+from component_manager import ComponentManager
+from components.container_image import ContainerImage
+from components.container_layer import ContainerLayer
+from components.network_flow import NetworkFlow
+from components.service import Service
 
 # Mesa modules
 from mesa import Agent
