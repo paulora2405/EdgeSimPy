@@ -33,7 +33,7 @@ class BaseStation(ComponentManager, Agent):
         self.id = obj_id
 
         # Base station coordinates
-        self.coordinates = None
+        self.coordinates: tuple[int, int]
 
         # Base station wireless delay
         self.wireless_delay = None
