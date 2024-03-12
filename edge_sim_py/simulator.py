@@ -1,9 +1,9 @@
 """ Contains all the simulation management functionality."""
 
 # EdgeSimPy components
-from component_manager import ComponentManager
-from components import *
-from activation_schedulers import *
+from .component_manager import ComponentManager
+from .components import max_min_fairness, Topology, NetworkLink
+from .activation_schedulers import DefaultScheduler
 
 # Mesa modules
 from mesa import Model, Agent

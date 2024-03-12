@@ -4,8 +4,8 @@
 """
 
 # EdgeSimPy components
-from components.topology import Topology
-from components.network_link import NetworkLink
+from ...components.topology import Topology
+from ...components.network_link import NetworkLink
 
 # Python libraries
 import random

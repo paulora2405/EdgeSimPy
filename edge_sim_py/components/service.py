@@ -1,10 +1,10 @@
 """ Contains service-related functionality."""
 
 # EdgeSimPy components
-from component_manager import ComponentManager
-from components.container_image import ContainerImage
-from components.container_layer import ContainerLayer
-from components.network_flow import NetworkFlow
+from ..component_manager import ComponentManager
+from .container_image import ContainerImage
+from .container_layer import ContainerLayer
+from .network_flow import NetworkFlow
 
 # Mesa modules
 from mesa import Agent

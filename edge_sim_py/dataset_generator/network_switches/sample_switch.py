@@ -5,8 +5,8 @@
 """
 
 # EdgeSimPy components
-from components.network_switch import NetworkSwitch
-from components.power_models.network.conterato_network_power_model import ConteratoNetworkPowerModel
+from ...components.network_switch import NetworkSwitch
+from ...components.power_models.network.conterato_network_power_model import ConteratoNetworkPowerModel
 
 
 def sample_switch() -> object:

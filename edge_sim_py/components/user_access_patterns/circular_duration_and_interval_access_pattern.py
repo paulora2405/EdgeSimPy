@@ -1,7 +1,7 @@
 """Contains a method that defines circular user access patterns."""
 
 # EdgeSimPy components
-from component_manager import ComponentManager
+from ...component_manager import ComponentManager
 
 # Python libraries
 from itertools import cycle

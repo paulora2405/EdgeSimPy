@@ -3,12 +3,12 @@
 # EdgeSimPy components
 import random
 from typing import Callable, Optional, Tuple
-from component_manager import ComponentManager
-from components.topology import Topology
-from components.base_station import BaseStation
-from components.network_switch import NetworkSwitch
-from components.application import Application
-from components.interest_point import InterestPoint
+from ..component_manager import ComponentManager
+from .topology import Topology
+from .base_station import BaseStation
+from .network_switch import NetworkSwitch
+from .application import Application
+from .point_of_interest import PointOfInterest
 
 # Mesa modules
 from mesa import Agent, Model
@@ -71,7 +71,7 @@ class User(ComponentManager, Agent):
         self.unique_id: int
 
         # Custom user mobility attributes
-        self.point_of_interest: Optional[InterestPoint] = None
+        self.point_of_interest: Optional[PointOfInterest] = None
 
     def _to_dict(self) -> dict:
         """Method that overrides the way the object is formatted to JSON."
@@ -144,7 +144,7 @@ class User(ComponentManager, Agent):
         if self.point_of_interest is None:
             # Random 60% chance of getting a point of interest
             if random.randint(0, 100) < 60:
-                pois_in_peak = InterestPoint.all_in_peak()
+                pois_in_peak = PointOfInterest.all_in_peak()
                 self.point_of_interest = random.choice(pois_in_peak) if len(pois_in_peak) > 0 else None
         # already has an poi, but it isn't in peak anymore
         elif not self.point_of_interest.is_in_peak:
@@ -325,3 +325,13 @@ class User(ComponentManager, Agent):
 
         self.base_station = base_station
         base_station.users.append(self)
+
+    @classmethod
+    def random_user_placement(cls, grid_coordinates: list[(int, int)]):
+        """Method that determines the coordinates of a given user randomly.
+
+        Returns:
+            coordinates (tuple): Random user coordinates.
+        """
+        coordinates = random.choice(grid_coordinates)
+        return coordinates

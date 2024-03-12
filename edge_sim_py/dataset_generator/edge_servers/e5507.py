@@ -8,7 +8,7 @@ Please notice that disk capacity is not informed in [1]. Accordingly, we arbitra
 """
 
 # EdgeSimPy components
-from components.edge_server import EdgeServer
+from ...components.edge_server import EdgeServer
 
 
 def e5507() -> object:

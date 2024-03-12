@@ -6,7 +6,7 @@
 """
 
 # EdgeSimPy components
-from components.edge_server import EdgeServer
+from ...components.edge_server import EdgeServer
 
 
 def jetson_tx2() -> object:

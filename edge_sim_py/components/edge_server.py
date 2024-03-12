@@ -1,11 +1,11 @@
 """ Contains edge-server-related functionality."""
 
 # EdgeSimPy components
-from component_manager import ComponentManager
-from components.network_flow import NetworkFlow
-from components.container_registry import ContainerRegistry
-from components.container_image import ContainerImage
-from components.container_layer import ContainerLayer
+from ..component_manager import ComponentManager
+from .network_flow import NetworkFlow
+from .container_registry import ContainerRegistry
+from .container_image import ContainerImage
+from .container_layer import ContainerLayer
 
 # Mesa modules
 from mesa import Agent

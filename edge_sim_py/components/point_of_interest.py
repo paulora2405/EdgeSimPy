@@ -2,19 +2,13 @@
 
 # EdgeSimPy components
 from typing import Optional, Self, Tuple
-from component_manager import ComponentManager
-from components.topology import Topology
-from components.user import User
+from ..component_manager import ComponentManager
 
 # Mesa modules
 from mesa import Agent, Model
 
-# Python libraries
-import copy
-import networkx as nx
 
-
-class InterestPoint(ComponentManager, Agent):
+class PointOfInterest(ComponentManager, Agent):
     """Class that represents a Point of Interest."""
 
     # Class attributes that allow this class to use helper methods from the ComponentManager
@@ -70,9 +64,6 @@ class InterestPoint(ComponentManager, Agent):
         elif self.is_in_peak and (current_step < self.peak_start or current_step >= self.peak_end):
             self.is_in_peak = False
             self.__class__._instances_in_peak.remove(self)
-
-    def _interest_user(self, user: User):
-        user.point_of_interest = self
 
     @classmethod
     def all_in_peak(cls) -> list[Self]:

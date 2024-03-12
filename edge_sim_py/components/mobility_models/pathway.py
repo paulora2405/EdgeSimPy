@@ -4,7 +4,7 @@
 """
 
 # EdgeSimPy components
-from components.base_station import BaseStation
+from ..base_station import BaseStation
 
 # Python libraries
 import random

@@ -1,7 +1,7 @@
 """ Contains base-station-related functionality."""
 
 # EdgeSimPy components
-from component_manager import ComponentManager
+from ..component_manager import ComponentManager
 
 # Mesa modules
 from mesa import Agent

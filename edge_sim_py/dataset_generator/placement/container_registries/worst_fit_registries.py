@@ -1,7 +1,7 @@
 """ Contains a method that defines the initial placement of container registries based on the well-known Worst Fit algorithm."""
 
 # EdgeSimPy component builder helpers
-from dataset_generator.builder_helpers import provision_container_registry
+from ...builder_helpers import provision_container_registry
 
 
 def worst_fit_registries(container_registry_specifications: list, servers: list):

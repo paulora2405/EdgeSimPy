@@ -1,8 +1,8 @@
 """ Contains topology-related functionality."""
 
 # EdgeSimPy components
-from component_manager import ComponentManager
-from components.network_flow import NetworkFlow
+from ..component_manager import ComponentManager
+from ..components.network_flow import NetworkFlow
 
 # Mesa modules
 from mesa import Agent

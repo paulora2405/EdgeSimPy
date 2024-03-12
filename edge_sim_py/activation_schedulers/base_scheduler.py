@@ -1,8 +1,5 @@
 """ Contains an agent activation scheduler inspired on Mesa's Base Scheduler."""
 
-# EdgeSimPy components
-from components import *
-
 # Mesa modules
 from mesa.time import BaseScheduler as MesaBaseScheduler
 

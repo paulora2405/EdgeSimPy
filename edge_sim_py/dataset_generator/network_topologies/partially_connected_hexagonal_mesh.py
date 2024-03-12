@@ -5,14 +5,14 @@
 """
 
 # EdgeSimPy components
-from components.topology import Topology
-from components.network_link import NetworkLink
+from ...components.topology import Topology
+from ...components.network_link import NetworkLink
 
 # Python libraries
 import random
 
 
-def partially_connected_hexagonal_mesh(network_nodes: list, link_specifications: list) -> object:
+def partially_connected_hexagonal_mesh(network_nodes: list, link_specifications: list) -> Topology:
     """Creates a partially-connected mesh network topology.
 
     Args:
