@@ -2,7 +2,9 @@
 
 __version__ = "1.1.0"
 
+
 # EdgeSimPy Components
+# ruff: noqa: F401
 from .topology import Topology
 from .network_switch import NetworkSwitch
 from .network_link import NetworkLink

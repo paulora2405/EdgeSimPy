@@ -1,4 +1,4 @@
-""" Contains functionality related to points-of-interest."""
+"""Contains functionality related to points-of-interest."""
 
 # EdgeSimPy components
 from typing import Optional, Self, Tuple
@@ -33,8 +33,8 @@ class PointOfInterest(ComponentManager, Agent):
         self.is_in_peak: bool = False
 
         # Model-specific attributes (defined inside the model's "initialize()" method)
-        self.model: Model
-        self.unique_id: int
+        self.model: Model = Model()
+        self.unique_id: int = 0
 
     def _to_dict(self) -> dict:
         dictionary = {

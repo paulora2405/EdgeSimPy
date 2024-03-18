@@ -15,7 +15,7 @@ from .activation_schedulers import DefaultScheduler
 from .component_manager import ComponentManager
 
 # we import all the components here so that they are present in globals() symbol table
-from .components import *  # noqa: F401, F403
+from .components import *  # noqa F403
 from .components import (
     # this ones are actually used
     NetworkLink,
