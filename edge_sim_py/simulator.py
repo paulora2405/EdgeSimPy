@@ -1,9 +1,5 @@
 """Contains all the simulation management functionality."""
 
-# EdgeSimPy components
-from .component_manager import ComponentManager
-from .components import max_min_fairness, Topology, NetworkLink
-from .activation_schedulers import DefaultScheduler
 import json
 import os
 from datetime import timedelta
@@ -13,6 +9,19 @@ from urllib.request import urlopen
 
 import msgpack
 from mesa import Agent, Model
+
+# EdgeSimPy components
+from .activation_schedulers import DefaultScheduler
+from .component_manager import ComponentManager
+
+# we import all the components here so that they are present in globals() symbol table
+from .components import *  # noqa: F401, F403
+from .components import (
+    # this ones are actually used
+    NetworkLink,
+    Topology,
+    max_min_fairness,
+)
 
 SUPPORTED_TIME_UNITS = ["seconds", "microseconds", "milliseconds", "minutes"]
 
