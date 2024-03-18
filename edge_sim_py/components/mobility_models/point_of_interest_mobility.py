@@ -1,8 +1,11 @@
 """Contains a method that creates user mobility traces according to a custom Point of Interest mobility model."""
 
-import networkx as nx
 import random
+
+import networkx as nx
+
 from ..base_station import BaseStation
+from ..network_switch import NetworkSwitch
 from ..user import User
 
 
@@ -13,6 +16,7 @@ def point_of_interest_mobility(user: User):
         user (User): User whose mobility will be defined.
     """
     parameters = user.mobility_model_parameters if hasattr(user, "mobility_model_parameters") else {}
+    n_paths = parameters["n_paths"] if "n_paths" in parameters else 1
 
 
 def pathway_copy(user: User):
@@ -27,7 +31,7 @@ def pathway_copy(user: User):
     for i in range(n_paths):
         target_node = random.choice([bs for bs in BaseStation.all() if bs != current_node])
 
-        path = nx.shortest_path(G=user.model.topology, source=current_node.network_switch, target=target_node.network_switch)
+        path: list[NetworkSwitch] = nx.shortest_path(G=user.model.topology, source=current_node.network_switch, target=target_node.network_switch) # type: ignore
         mobility_path.extend([network_switch.base_station for network_switch in path])
 
         if i < n_paths - 1:

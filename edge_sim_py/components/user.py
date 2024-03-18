@@ -1,4 +1,4 @@
-""" Contains user-related functionality."""
+"""Contains user-related functionality."""
 
 # EdgeSimPy components
 import random
@@ -45,20 +45,20 @@ class User(ComponentManager, Agent):
 
         # User coordinates
         self.coordinates_trace: list[Tuple[int, int]] = []
-        self.coordinates: Tuple[int, int]
+        self.coordinates: Tuple[int, int] = (0, 0)
 
         # List of applications accessed by the user
         self.applications: list[Application] = []
 
         # Reference to the base station the user is connected to
-        self.base_station: BaseStation
+        self.base_station: BaseStation = BaseStation()
 
         # User access metadata
         self.making_requests = {}
         self.access_patterns = {}
 
         # User mobility model
-        self.mobility_model: Callable[[User], None]
+        self.mobility_model: Callable[[User], None] = lambda user: None
         self.mobility_model_parameters = {}
 
         # List of metadata from applications accessed by the user
@@ -67,8 +67,8 @@ class User(ComponentManager, Agent):
         self.delay_slas = {}
 
         # Model-specific attributes (defined inside the model's "initialize()" method)
-        self.model: Model
-        self.unique_id: int
+        self.model: Model = Model()
+        self.unique_id: int = 0
 
         # Custom user mobility attributes
         self.point_of_interest: Optional[PointOfInterest] = None
@@ -256,7 +256,6 @@ class User(ComponentManager, Agent):
 
             # Defining a set of links to connect the items in the application's service chain
             for i in range(len(communication_chain) - 1):
-
                 # Defining origin and target nodes
                 origin = communication_chain[i]
                 target = communication_chain[i + 1]

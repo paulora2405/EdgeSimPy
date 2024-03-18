@@ -1,4 +1,4 @@
-""" Contains a network switch power model definition."""
+"""Contains a network switch power model definition."""
 
 
 class ConteratoNetworkPowerModel:

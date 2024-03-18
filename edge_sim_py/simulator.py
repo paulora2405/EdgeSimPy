@@ -1,21 +1,18 @@
-""" Contains all the simulation management functionality."""
+"""Contains all the simulation management functionality."""
 
 # EdgeSimPy components
 from .component_manager import ComponentManager
 from .components import max_min_fairness, Topology, NetworkLink
 from .activation_schedulers import DefaultScheduler
-
-# Mesa modules
-from mesa import Model, Agent
-
-# Python libraries
-import os
 import json
-import msgpack
-from typing import Callable
+import os
 from datetime import timedelta
+from typing import Callable
 from urllib.parse import urlparse
 from urllib.request import urlopen
+
+import msgpack
+from mesa import Agent, Model
 
 SUPPORTED_TIME_UNITS = ["seconds", "microseconds", "milliseconds", "minutes"]
 
@@ -79,7 +76,10 @@ class Simulator(ComponentManager, Model):
             raise Exception("Tick duration attribute must be greater than zero.")
 
         self.tick_duration = timedelta(
-            seconds=seconds, microseconds=microseconds, milliseconds=milliseconds, minutes=minutes
+            seconds=seconds,
+            microseconds=microseconds,
+            milliseconds=milliseconds,
+            minutes=minutes,
         ).total_seconds()
 
         # Simulation metrics
@@ -307,7 +307,10 @@ class Simulator(ComponentManager, Model):
                 if f"{agent.__class__.__name__}" not in self.agent_metrics:
                     self.agent_metrics[f"{agent.__class__.__name__}"] = []
 
-                metrics = {**{"Object": f"{agent}", "Time Step": self.schedule.steps}, **metrics}
+                metrics = {
+                    **{"Object": f"{agent}", "Time Step": self.schedule.steps},
+                    **metrics,
+                }
                 self.agent_metrics[f"{agent.__class__.__name__}"].append(metrics)
 
         if self.schedule.steps == self.last_dump + self.dump_interval:

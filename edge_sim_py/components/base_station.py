@@ -1,4 +1,4 @@
-""" Contains base-station-related functionality."""
+"""Contains base-station-related functionality."""
 
 # EdgeSimPy components
 from ..component_manager import ComponentManager
@@ -33,7 +33,7 @@ class BaseStation(ComponentManager, Agent):
         self.id = obj_id
 
         # Base station coordinates
-        self.coordinates: tuple[int, int]
+        self.coordinates: tuple[int, int] = (0, 0)
 
         # Base station wireless delay
         self.wireless_delay = None

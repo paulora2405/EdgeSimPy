@@ -5,6 +5,7 @@ Example:
     'User.count()' allows you to get the number of created instances from class User.
     'Service.find_by_id(3)' allows you to find the Service object that has id attribute = 3
 """
+
 # Python libraries
 import os
 import json
