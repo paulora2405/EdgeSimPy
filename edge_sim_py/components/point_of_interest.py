@@ -54,7 +54,7 @@ class PointOfInterest(ComponentManager, Agent):
 
     def step(self):
         current_step: int = self.model.schedule.steps + 1
-        # NOTE: maybe run this logic should only run if current_step % 100 = 0
+        # TODO: maybe run this logic should only run if current_step % 100 = 0
 
         # not in peak yet, but this step will start being
         if not self.is_in_peak and current_step >= self.peak_start and current_step < self.peak_end:

@@ -4,14 +4,16 @@
 """
 
 # EdgeSimPy components
-from ..base_station import BaseStation
-
 # Python libraries
 import random
+
 import networkx as nx
 
+from ..base_station import BaseStation
+from ..user import User
 
-def pathway(user: object):
+
+def pathway(user: User):
     """Creates a mobility path for an user based on the Pathway mobility model.
 
     Args:

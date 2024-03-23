@@ -1,21 +1,22 @@
 """Contains user-related functionality."""
 
 # EdgeSimPy components
+# Python libraries
+import copy
 import random
 from typing import Callable, Optional, Tuple
-from ..component_manager import ComponentManager
-from .topology import Topology
-from .base_station import BaseStation
-from .network_switch import NetworkSwitch
-from .application import Application
-from .point_of_interest import PointOfInterest
+
+import networkx as nx
 
 # Mesa modules
 from mesa import Agent, Model
 
-# Python libraries
-import copy
-import networkx as nx
+from ..component_manager import ComponentManager
+from .application import Application
+from .base_station import BaseStation
+from .network_switch import NetworkSwitch
+from .point_of_interest import PointOfInterest
+from .topology import Topology
 
 
 class User(ComponentManager, Agent):
@@ -72,6 +73,7 @@ class User(ComponentManager, Agent):
 
         # Custom user mobility attributes
         self.point_of_interest: Optional[PointOfInterest] = None
+        self.movement_distance: int = random.randint(1, 3)
 
     def _to_dict(self) -> dict:
         """Method that overrides the way the object is formatted to JSON."
@@ -140,15 +142,7 @@ class User(ComponentManager, Agent):
         # Updating user access
         current_step = self.model.schedule.steps + 1
 
-        # doesn't have a poi yet
-        if self.point_of_interest is None:
-            # Random 60% chance of getting a point of interest
-            if random.randint(0, 100) < 60:
-                pois_in_peak = PointOfInterest.all_in_peak()
-                self.point_of_interest = random.choice(pois_in_peak) if len(pois_in_peak) > 0 else None
-        # already has an poi, but it isn't in peak anymore
-        elif not self.point_of_interest.is_in_peak:
-            self.point_of_interest = None
+        self.step_point_of_interest()
 
         for app in self.applications:
             last_access = self.access_patterns[str(app.id)].history[-1]
@@ -325,8 +319,26 @@ class User(ComponentManager, Agent):
         self.base_station = base_station
         base_station.users.append(self)
 
+    def step_point_of_interest(self):
+        """Step logic for point of interest.
+
+        Chooses a random point of interest if user doesn't already have one.
+        There is a chance of 40% of not picking any POIs.
+        If user has POI, but is is not in peak, this method removes it.
+        """
+        # doesn't have a poi yet
+        if self.point_of_interest is None:
+            # Random 60% chance of getting a point of interest
+            if random.randint(0, 100) < 60:
+                pois_in_peak = PointOfInterest.all_in_peak()
+                self.point_of_interest = random.choice(pois_in_peak) if len(pois_in_peak) > 0 else None
+
+        # already has an poi, but it isn't in peak anymore
+        elif not self.point_of_interest.is_in_peak:
+            self.point_of_interest = None
+
     @classmethod
-    def random_user_placement(cls, grid_coordinates: list[(int, int)]):
+    def random_user_placement(cls, grid_coordinates: list[(int, int)]) -> tuple[int, int]:
         """Method that determines the coordinates of a given user randomly.
 
         Returns:

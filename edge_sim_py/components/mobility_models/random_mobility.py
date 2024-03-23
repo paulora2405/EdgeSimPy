@@ -1,13 +1,14 @@
 """Contains a method that creates user mobility randomly."""
 
 # EdgeSimPy components
-from ..base_station import BaseStation
-
 # Python libraries
 import random
 
+from ..base_station import BaseStation
+from ..user import User
 
-def random_mobility(user: object):
+
+def random_mobility(user: User):
     """Creates a random mobility path for an user.
 
     Args:

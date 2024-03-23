@@ -15,13 +15,9 @@ from .activation_schedulers import DefaultScheduler
 from .component_manager import ComponentManager
 
 # we import all the components here so that they are present in globals() symbol table
+# the explicit ones are actually used
 from .components import *  # noqa F403
-from .components import (
-    # this ones are actually used
-    NetworkLink,
-    Topology,
-    max_min_fairness,
-)
+from .components import NetworkLink, Topology, max_min_fairness
 
 SUPPORTED_TIME_UNITS = ["seconds", "microseconds", "milliseconds", "minutes"]
 
