@@ -189,20 +189,20 @@ class Simulator(ComponentManager, Model):
         for component in components:
             for key, value in component.relationships.items():
                 # Defining attributes referencing callables (i.e., functions and methods)
-                if type(value) == str and value in globals():
+                if type(value) is str and value in globals():
                     setattr(component, f"{key}", globals()[value])
 
                 # Defining attributes referencing lists of components (e.g., lists of edge servers, users, etc.)
-                elif type(value) == list:
+                elif type(value) is list:
                     attribute_values = []
                     for item in value:
                         obj = (
                             globals()[item["class"]].find_by_id(item["id"])
-                            if type(item) == dict and "class" in item and item["class"] in globals()
+                            if type(item) is dict and "class" in item and item["class"] in globals()
                             else None
                         )
 
-                        if obj == None:
+                        if obj is None:
                             raise Exception(f"List relationship '{key}' of component {component} has an invalid item: {item}.")
 
                         attribute_values.append(obj)
@@ -210,26 +210,26 @@ class Simulator(ComponentManager, Model):
                     setattr(component, f"{key}", attribute_values)
 
                 # Defining attributes that reference a single component (e.g., an edge server, an user, etc.)
-                elif type(value) == dict and "class" in value and "id" in value:
+                elif type(value) is dict and "class" in value and "id" in value:
                     obj = (
                         globals()[value["class"]].find_by_id(value["id"])
-                        if type(value) == dict and "class" in value and value["class"] in globals()
+                        if type(value) is dict and "class" in value and value["class"] in globals()
                         else None
                     )
 
-                    if obj == None:
+                    if obj is None:
                         raise Exception(f"Relationship '{key}' of component {component} references an invalid object: {value}.")
 
                     setattr(component, f"{key}", obj)
 
                 # Defining attributes that reference a a dictionary of components (e.g., {"1": {"class": "A", "id": 1}} )
-                elif type(value) == dict and all(
-                    type(entry) == dict and "class" in entry and "id" in entry for entry in value.values()
+                elif type(value) is dict and all(
+                    type(entry) is dict and "class" in entry and "id" in entry for entry in value.values()
                 ):
                     attribute = {}
                     for k, v in value.items():
                         obj = globals()[v["class"]].find_by_id(v["id"]) if "class" in v and v["class"] in globals() else None
-                        if obj == None:
+                        if obj is None:
                             raise Exception(
                                 f"Relationship '{key}' of component {component} references an invalid object: {value}."
                             )
@@ -238,7 +238,7 @@ class Simulator(ComponentManager, Model):
                     setattr(component, f"{key}", attribute)
 
                 # Defining "None" attributes
-                elif value == None:
+                elif value is None:
                     setattr(component, f"{key}", None)
 
                 else:
@@ -257,10 +257,10 @@ class Simulator(ComponentManager, Model):
 
     def run_model(self):
         """Executes the simulation."""
-        if self.stopping_criterion == None:
+        if self.stopping_criterion is None:
             raise Exception("Please assign the 'stopping_criterion' attribute before starting the simulation.")
 
-        if self.resource_management_algorithm == None:
+        if self.resource_management_algorithm is None:
             raise Exception("Please assign the 'resource_management_algorithm' attribute before starting the simulation.")
 
         # Calls the method that collects monitoring data about the agents
