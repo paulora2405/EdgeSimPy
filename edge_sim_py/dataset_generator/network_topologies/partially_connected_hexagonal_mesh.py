@@ -4,12 +4,13 @@
     Proceedings of the 12th IEEE/ACM International Conference on Utility and Cloud Computing. 2019.
 """
 
-# EdgeSimPy components
-from ...components.topology import Topology
-from ...components.network_link import NetworkLink
-
 # Python libraries
 import random
+import sys
+
+# EdgeSimPy components
+from ...components.network_link import NetworkLink
+from ...components.topology import Topology
 
 
 def partially_connected_hexagonal_mesh(network_nodes: list, link_specifications: list) -> Topology:
@@ -30,11 +31,16 @@ def partially_connected_hexagonal_mesh(network_nodes: list, link_specifications:
     map_coordinates = [node.coordinates for node in network_nodes]
 
     # Adding links to each network node
-    for node in network_nodes:
+    for i, node in enumerate(network_nodes):
+        if i % 100 == 0:
+            sys.stdout.write("\r")
+            sys.stdout.write(f"{i}/{len(network_nodes)}")
+            sys.stdout.flush()
         neighbors = find_neighbors_hexagonal_grid(current_position=node.coordinates, map_coordinates=map_coordinates)
 
         for neighbor_coordinates in neighbors:
             neighbor = next((n for n in network_nodes if n.coordinates == neighbor_coordinates), None)
+            # FIXME: optimize this call ⬆
 
             if not neighbor:
                 raise Exception(f"Cannot find network node with coordinates: {neighbor_coordinates}")
@@ -51,10 +57,13 @@ def partially_connected_hexagonal_mesh(network_nodes: list, link_specifications:
                 topology.add_edge(node, neighbor)
                 topology._adj[node][neighbor] = link
                 topology._adj[neighbor][node] = link
+    sys.stdout.write("\r")
+    sys.stdout.flush()
 
     # Checking if the number of link specifications is equal to the number of links in the network topology
-    links_with_missing_specs = sum([spec["number_of_objects"] for spec in link_specifications]) != len(topology.edges())
-    if links_with_missing_specs:
+    if len(link_specifications) == 1 and "number_of_objects" not in link_specifications[0]:
+        link_specifications[0]["number_of_objects"] = len(topology.edges())
+    elif sum([spec["number_of_objects"] for spec in link_specifications]) != len(topology.edges()):
         raise Exception(
             f"You must specify the properties for {len(topology.edges())} links or ignore the 'link_specifications' parameter."
         )
