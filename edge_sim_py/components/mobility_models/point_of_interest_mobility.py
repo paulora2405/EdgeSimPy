@@ -12,6 +12,8 @@ def point_of_interest_mobility(user: User):
         user (User): User whose mobility will be defined.
     """
     if user.point_of_interest is None:
+        user.coordinates_trace.extend([user.coordinates_trace[-1]])
+        user.coordinates = user.coordinates_trace[-1]
         return
 
     parameters = getattr(user, "mobility_model_parameters", {})
