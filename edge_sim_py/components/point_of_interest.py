@@ -2,10 +2,15 @@
 
 # EdgeSimPy components
 from typing import Optional, Self, Tuple
-from ..component_manager import ComponentManager
 
 # Mesa modules
 from mesa import Agent, Model
+
+from ..component_manager import ComponentManager
+
+DAY_START_IN_MINUTES = 5 * 60
+DAY_END_IN_MINUTES = 23 * 60
+DAY_CYCLE_IN_MINUTES = DAY_END_IN_MINUTES - DAY_START_IN_MINUTES
 
 
 class PointOfInterest(ComponentManager, Agent):
@@ -54,14 +59,17 @@ class PointOfInterest(ComponentManager, Agent):
 
     def step(self):
         current_step: int = self.model.schedule.steps + 1
-        # TODO: maybe run this logic should only run if current_step % 100 = 0
+
+        def is_peak_time():
+            time_of_day_in_minutes = current_step % DAY_CYCLE_IN_MINUTES
+            return time_of_day_in_minutes >= self.peak_start and time_of_day_in_minutes < self.peak_end
 
         # not in peak yet, but this step will start being
-        if not self.is_in_peak and current_step >= self.peak_start and current_step < self.peak_end:
+        if not self.is_in_peak and is_peak_time():
             self.is_in_peak = True
             self.__class__._instances_in_peak.append(self)
         # is in peak, but should not be anymore
-        elif self.is_in_peak and (current_step < self.peak_start or current_step >= self.peak_end):
+        elif self.is_in_peak and not is_peak_time():
             self.is_in_peak = False
             self.__class__._instances_in_peak.remove(self)
 

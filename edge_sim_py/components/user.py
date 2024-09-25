@@ -18,6 +18,8 @@ from .network_switch import NetworkSwitch
 from .point_of_interest import PointOfInterest
 from .topology import Topology
 
+CHANCE_OF_BECOMING_INTERESTED = 60
+
 
 class User(ComponentManager, Agent):
     """Class that represents an user."""
@@ -129,6 +131,7 @@ class User(ComponentManager, Agent):
         metrics = {
             "Instance ID": self.id,
             "Coordinates": self.coordinates,
+            "Coordinates Trace": self.coordinates_trace,
             "Base Station": f"{self.base_station} ({self.base_station.coordinates})" if self.base_station else None,
             "Delays": copy.deepcopy(self.delays),
             "Communication Paths": copy.deepcopy(self.communication_paths),
@@ -329,7 +332,7 @@ class User(ComponentManager, Agent):
         # doesn't have a poi yet
         if self.point_of_interest is None:
             # Random 60% chance of getting a point of interest
-            if random.randint(0, 100) < 60:
+            if random.randint(0, 100) < CHANCE_OF_BECOMING_INTERESTED:
                 pois_in_peak = PointOfInterest.all_in_peak()
                 self.point_of_interest = random.choice(pois_in_peak) if len(pois_in_peak) > 0 else None
 
@@ -338,7 +341,7 @@ class User(ComponentManager, Agent):
             self.point_of_interest = None
 
     @classmethod
-    def random_user_placement(cls, grid_coordinates: list[(int, int)]) -> tuple[int, int]:
+    def random_user_placement(cls, grid_coordinates: list[tuple[int, int]]) -> tuple[int, int]:
         """Method that determines the coordinates of a given user randomly.
 
         Returns:
