@@ -18,6 +18,7 @@ from .component_manager import ComponentManager
 # the explicit ones are actually used
 from .components import *  # noqa F403
 from .components import NetworkLink, Topology, max_min_fairness
+from .components.point_of_interest import DAY_CYCLE_IN_MINUTES, DAY_START_IN_MINUTES
 
 SUPPORTED_TIME_UNITS = ["seconds", "microseconds", "milliseconds", "minutes"]
 
@@ -285,6 +286,12 @@ class Simulator(ComponentManager, Model):
         self.resource_management_algorithm(parameters=self.resource_management_algorithm_parameters)
 
         # Activating agents
+        ajusted_step = self.schedule.steps + DAY_START_IN_MINUTES
+        print(
+            f"Step {self.schedule.steps:05d} "
+            f"Time: {ajusted_step // 60:02d}:{ajusted_step % 60:02d} "
+            f"Day: {ajusted_step // DAY_CYCLE_IN_MINUTES + 1} "
+        )
         self.schedule.step()
 
         # Updating the "current_step" attribute inside the resource management algorithm's parameters
