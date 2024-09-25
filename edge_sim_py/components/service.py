@@ -1,16 +1,19 @@
-""" Contains service-related functionality."""
+"""Contains service-related functionality."""
 
 # EdgeSimPy components
-from ..component_manager import ComponentManager
-from .container_image import ContainerImage
-from .container_layer import ContainerLayer
-from .network_flow import NetworkFlow
+# Python libraries
+import math
+
+import networkx as nx
 
 # Mesa modules
 from mesa import Agent
 
-# Python libraries
-import networkx as nx
+from ..component_manager import ComponentManager
+from .application import Application
+from .container_image import ContainerImage
+from .container_layer import ContainerLayer
+from .network_flow import NetworkFlow
 
 
 class Service(ComponentManager, Agent):
@@ -68,10 +71,11 @@ class Service(ComponentManager, Agent):
         self.server = None
 
         # Application to whom the service belongs
-        self.application = None
+        self.application: Application
 
         # List of users that access the service
         self.users = []
+        self.total_dist_from_users = 0
 
         # Service availability and provisioning status
         self._available = False  # Service is not available, for example, when its state is being transferred
@@ -114,17 +118,16 @@ class Service(ComponentManager, Agent):
             metrics (dict): Object metrics.
         """
 
-        if len(self._Service__migrations) > 0:
-
+        if len(self.__migrations) > 0:
             last_migration = {
-                "status": self._Service__migrations[-1]["status"],
-                "origin": str(self._Service__migrations[-1]["origin"]),
-                "target": str(self._Service__migrations[-1]["target"]),
-                "start": self._Service__migrations[-1]["start"],
-                "end": self._Service__migrations[-1]["end"],
-                "waiting": self._Service__migrations[-1]["waiting_time"],
-                "pulling": self._Service__migrations[-1]["pulling_layers_time"],
-                "migr_state": self._Service__migrations[-1]["migrating_service_state_time"],
+                "status": self.__migrations[-1]["status"],
+                "origin": str(self.__migrations[-1]["origin"]),
+                "target": str(self.__migrations[-1]["target"]),
+                "start": self.__migrations[-1]["start"],
+                "end": self.__migrations[-1]["end"],
+                "waiting": self.__migrations[-1]["waiting_time"],
+                "pulling": self.__migrations[-1]["pulling_layers_time"],
+                "migr_state": self.__migrations[-1]["migrating_service_state_time"],
             }
         else:
             last_migration = None
@@ -135,13 +138,14 @@ class Service(ComponentManager, Agent):
             "Server": self.server.id if self.server else None,
             "Being Provisioned": self.being_provisioned,
             "Last Migration": last_migration,
+            "Total Distance From Users": self.total_dist_from_users,
         }
         return metrics
 
     def step(self):
         """Method that executes the events involving the object at each time step."""
-        if len(self._Service__migrations) > 0 and self._Service__migrations[-1]["end"] == None:
-            migration = self._Service__migrations[-1]
+        if len(self.__migrations) > 0 and self.__migrations[-1]["end"] == None:
+            migration = self.__migrations[-1]
 
             # Gathering information about the service's image
             image = ContainerImage.find_by(attribute_name="digest", attribute_value=self.image_digest)
@@ -250,6 +254,32 @@ class Service(ComponentManager, Agent):
                 for user in users:
                     user.set_communication_path(app)
 
+        # \frac{\sum{u in users} distance(s, u)}{N * max(min(distance(s, u)))}
+        #
+        #       Sum(all_distances)
+        # ------------------------------
+        # Num_users * max(all_distances)
+
+        total_distance_from_users: float = 0.0
+        max_distance: float = 0.0
+        if self.server is not None:
+            for user in self.application.users:
+                curr_distance: float = nx.shortest_path_length(
+                    G=self.model.topology,
+                    source=self.server.base_station.network_switch,
+                    target=user.base_station.network_switch,
+                )
+                total_distance_from_users += curr_distance
+                if curr_distance > max_distance:
+                    max_distance = curr_distance
+            self.total_dist_from_users = (
+                total_distance_from_users / (len(self.application.users) * max_distance)
+                if len(self.application.users) > 0
+                else 0.0
+            )
+        else:
+            total_distance_from_users = 0.0
+
     def provision(self, target_server: object):
         """Starts the service's provisioning process. This process comprises both placement and migration. In the former, the
         service is not initially hosted by any server within the infrastructure. In the latter, the service is already being
@@ -300,7 +330,7 @@ class Service(ComponentManager, Agent):
         target_server.memory_demand += self.memory_demand
 
         # Updating the service's migration status
-        self._Service__migrations.append(
+        self.__migrations.append(
             {
                 "status": "waiting",
                 "origin": self.server,
@@ -312,3 +342,17 @@ class Service(ComponentManager, Agent):
                 "migrating_service_state_time": 0,
             }
         )
+
+    def was_recently_migrated(self, past_steps: int) -> bool:
+        """Method that checks if the service was recently migrated.
+
+        Args:
+            past_steps (int): Number of past steps to consider.
+
+        Returns:
+            bool: True if the service was recently migrated, False otherwise.
+        """
+        if len(self.__migrations) == 0 or self.being_provisioned or self.__migrations[-1]["end"] == None:
+            return False
+
+        return self.model.schedule.steps - self.__migrations[-1]["end"] <= past_steps
