@@ -1,18 +1,19 @@
-""" Contains edge-server-related functionality."""
+"""Contains edge-server-related functionality."""
 
 # EdgeSimPy components
-from ..component_manager import ComponentManager
-from .network_flow import NetworkFlow
-from .container_registry import ContainerRegistry
-from .container_image import ContainerImage
-from .container_layer import ContainerLayer
+import typing
+
+# Python libraries
+import networkx as nx
 
 # Mesa modules
 from mesa import Agent
 
-# Python libraries
-import networkx as nx
-import typing
+from ..component_manager import ComponentManager
+from .container_image import ContainerImage
+from .container_layer import ContainerLayer
+from .container_registry import ContainerRegistry
+from .network_flow import NetworkFlow
 
 
 class EdgeServer(ComponentManager, Agent):

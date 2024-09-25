@@ -1,4 +1,4 @@
-""" Adds helper methods to class objects that ease manipulation.
+"""Adds helper methods to class objects that ease manipulation.
 
 Example:
     'Application.first()' allows you to get the first instance from Application class.
@@ -7,8 +7,8 @@ Example:
 """
 
 # Python libraries
-import os
 import json
+import os
 
 
 class ComponentManager:

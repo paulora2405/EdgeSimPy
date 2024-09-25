@@ -1,17 +1,17 @@
-""" Contains container-registry-related functionality."""
+"""Contains container-registry-related functionality."""
 
 # EdgeSimPy components
+# Python libraries
+from random import choice
+
+# Mesa modules
+from mesa import Agent
+
 from ..component_manager import ComponentManager
 from .container_image import ContainerImage
 from .container_layer import ContainerLayer
 from .network_flow import NetworkFlow
 from .service import Service
-
-# Mesa modules
-from mesa import Agent
-
-# Python libraries
-from random import choice
 
 
 class ContainerRegistry(ComponentManager, Agent):
@@ -198,7 +198,7 @@ class ContainerRegistry(ComponentManager, Agent):
                 unused_images = list(self.server.container_images)
                 unused_layers = list(self.server.container_layers)
                 for service in Service.all():
-                    service_target = service._Service__migrations[-1]["target"] if len(service._Service__migrations) > 0 else None
+                    service_target = service.__migrations[-1]["target"] if len(service.__migrations) > 0 else None
                     if service.server == self.server or service_target == self.server:
                         image = next((img for img in unused_images if img.digest == service.image_digest), None)
                         # Removing the used image from the "unused_images" list

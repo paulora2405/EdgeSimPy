@@ -1,10 +1,10 @@
-""" Contains network-flow-related functionality."""
+"""Contains network-flow-related functionality."""
 
 # EdgeSimPy components
-from ..component_manager import ComponentManager
-
 # Mesa modules
 from mesa import Agent
+
+from ..component_manager import ComponentManager
 
 
 class NetworkFlow(ComponentManager, Agent):
@@ -171,4 +171,4 @@ class NetworkFlow(ComponentManager, Agent):
                 # When service state flows finish: change the service migration status
                 elif self.metadata["type"] == "service_state":
                     service = self.metadata["object"]
-                    service._Service__migrations[-1]["status"] = "finished"
+                    service.__migrations[-1]["status"] = "finished"
