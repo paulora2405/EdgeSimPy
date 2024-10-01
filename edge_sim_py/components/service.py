@@ -262,7 +262,7 @@ class Service(ComponentManager, Agent):
 
         total_distance_from_users: float = 0.0
         max_distance: float = 0.0
-        if self.server is not None:
+        if self.server is not None and len(self.application.users) > 0:
             for user in self.application.users:
                 curr_distance: float = nx.shortest_path_length(
                     G=self.model.topology,
@@ -272,13 +272,9 @@ class Service(ComponentManager, Agent):
                 total_distance_from_users += curr_distance
                 if curr_distance > max_distance:
                     max_distance = curr_distance
-            self.total_dist_from_users = (
-                total_distance_from_users / (len(self.application.users) * max_distance)
-                if len(self.application.users) > 0
-                else 0.0
-            )
+            self.total_dist_from_users = total_distance_from_users / (len(self.application.users) * max_distance)
         else:
-            total_distance_from_users = 0.0
+            self.total_dist_from_users = 0.0
 
     def provision(self, target_server: object):
         """Starts the service's provisioning process. This process comprises both placement and migration. In the former, the
