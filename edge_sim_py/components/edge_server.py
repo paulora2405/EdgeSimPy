@@ -10,6 +10,7 @@ import networkx as nx
 from mesa import Agent
 
 from ..component_manager import ComponentManager
+from ..components import Service
 from .container_image import ContainerImage
 from .container_layer import ContainerLayer
 from .container_registry import ContainerRegistry
@@ -242,6 +243,19 @@ class EdgeServer(ComponentManager, Agent):
         # Checking if the host would have resources to host the registry and its (additional) layers
         can_host = free_cpu >= service.cpu_demand and free_memory >= service.memory_demand and free_disk >= additional_disk_demand
         return can_host
+
+    def capacity_score(self, service: Service, cpu_weight=0.5, memory_weight=0.4, disk_weight=0.1) -> float:
+        free_cpu = self.cpu - (self.cpu_demand + service.cpu_demand)
+        free_memory = self.memory - (self.memory_demand + service.memory_demand)
+        free_disk = self.disk - (self.disk_demand + self._get_disk_demand_delta(service))
+        if free_cpu < 0 or free_memory < 0 or free_disk < 0:
+            return 0
+
+        return (
+            (free_cpu / self.cpu) * cpu_weight
+            + (free_memory / self.memory) * memory_weight
+            + (free_disk / self.disk) * disk_weight
+        )
 
     def _add_container_image(self, template_container_image: object) -> object:
         """Adds a new container image to the edge server based on the specifications of an existing image.
