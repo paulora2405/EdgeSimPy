@@ -254,12 +254,6 @@ class Service(ComponentManager, Agent):
                 for user in users:
                     user.set_communication_path(app)
 
-        # \frac{\sum{u in users} distance(s, u)}{N * max(min(distance(s, u)))}
-        #
-        #       Sum(all_distances)
-        # ------------------------------
-        # Num_users * max(all_distances)
-
         total_distance_from_users: float = 0.0
         max_distance: float = 0.0
         if self.server is not None and len(self.application.users) > 0:
@@ -267,6 +261,8 @@ class Service(ComponentManager, Agent):
                 curr_distance: float = nx.shortest_path_length(
                     G=self.model.topology,
                     source=self.server.base_station.network_switch,
+                    weight="delay",
+                    method="dijkstra",
                     target=user.base_station.network_switch,
                 )
                 total_distance_from_users += curr_distance

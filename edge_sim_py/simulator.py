@@ -286,11 +286,11 @@ class Simulator(ComponentManager, Model):
         self.resource_management_algorithm(parameters=self.resource_management_algorithm_parameters)
 
         # Activating agents
-        ajusted_step = self.schedule.steps + DAY_START_IN_MINUTES
+        ajusted_step = self.schedule.steps % DAY_CYCLE_IN_MINUTES + DAY_START_IN_MINUTES
         print(
             f"Step {self.schedule.steps:05d} "
             f"Time: {ajusted_step // 60:02d}:{ajusted_step % 60:02d} "
-            f"Day: {ajusted_step // DAY_CYCLE_IN_MINUTES + 1} "
+            f"Day: {self.schedule.steps // DAY_CYCLE_IN_MINUTES + 1} "
         )
         self.schedule.step()
 

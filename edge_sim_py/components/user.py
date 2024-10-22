@@ -18,8 +18,6 @@ from .network_switch import NetworkSwitch
 from .point_of_interest import PointOfInterest
 from .topology import Topology
 
-CHANCE_OF_BECOMING_INTERESTED = 60
-
 
 class User(ComponentManager, Agent):
     """Class that represents an user."""
@@ -75,7 +73,8 @@ class User(ComponentManager, Agent):
 
         # Custom user mobility attributes
         self.point_of_interest: Optional[PointOfInterest] = None
-        self.movement_distance: int = random.randint(1, 3)
+        self.chance_of_becoming_interested = 100
+        self.movement_distance: int = 0
 
     def _to_dict(self) -> dict:
         """Method that overrides the way the object is formatted to JSON."
@@ -332,7 +331,7 @@ class User(ComponentManager, Agent):
         # doesn't have a poi yet
         if self.point_of_interest is None:
             # Random 60% chance of getting a point of interest
-            if random.randint(0, 100) < CHANCE_OF_BECOMING_INTERESTED:
+            if random.randint(0, 100) < self.chance_of_becoming_interested:
                 pois_in_peak = PointOfInterest.all_in_peak()
                 self.point_of_interest = random.choice(pois_in_peak) if len(pois_in_peak) > 0 else None
 
