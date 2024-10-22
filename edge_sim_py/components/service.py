@@ -10,6 +10,7 @@ import networkx as nx
 from mesa import Agent
 
 from ..component_manager import ComponentManager
+from ..components import EdgeServer
 from .application import Application
 from .container_image import ContainerImage
 from .container_layer import ContainerLayer
@@ -68,7 +69,7 @@ class Service(ComponentManager, Agent):
         self.state = state
 
         # Server that hosts the service
-        self.server = None
+        self.server: EdgeServer
 
         # Application to whom the service belongs
         self.application: Application
@@ -254,13 +255,17 @@ class Service(ComponentManager, Agent):
                 for user in users:
                     user.set_communication_path(app)
 
+        self.total_dist_from_users = self.distance_from_edge_server_to_users()
+
+    def distance_from_edge_server_to_users(self, edge_server: EdgeServer | None = None) -> float:
+        edge_server = edge_server if edge_server is not None and isinstance(edge_server, EdgeServer) else self.server
         total_distance_from_users: float = 0.0
         max_distance: float = 0.0
-        if self.server is not None and len(self.application.users) > 0:
+        if edge_server is not None and len(self.application.users) > 0:
             for user in self.application.users:
                 curr_distance: float = nx.shortest_path_length(
                     G=self.model.topology,
-                    source=self.server.base_station.network_switch,
+                    source=edge_server.base_station.network_switch,
                     weight="delay",
                     method="dijkstra",
                     target=user.base_station.network_switch,
@@ -268,9 +273,11 @@ class Service(ComponentManager, Agent):
                 total_distance_from_users += curr_distance
                 if curr_distance > max_distance:
                     max_distance = curr_distance
-            self.total_dist_from_users = total_distance_from_users / (len(self.application.users) * max_distance)
+            total_distance_from_users = total_distance_from_users / (len(self.application.users) * max_distance)
         else:
-            self.total_dist_from_users = 0.0
+            total_distance_from_users = 0.0
+
+        return total_distance_from_users
 
     def provision(self, target_server: object):
         """Starts the service's provisioning process. This process comprises both placement and migration. In the former, the
