@@ -244,7 +244,20 @@ class EdgeServer(ComponentManager, Agent):
         can_host = free_cpu >= service.cpu_demand and free_memory >= service.memory_demand and free_disk >= additional_disk_demand
         return can_host
 
-    def capacity_score(self, service: Service, cpu_weight=0.5, memory_weight=0.4, disk_weight=0.1) -> float:
+    def current_capacity_score(self, cpu_weight=0.5, memory_weight=0.4, disk_weight=0.1) -> float:
+        free_cpu = self.cpu - self.cpu_demand
+        free_memory = self.memory - self.memory_demand
+        free_disk = self.disk - self.disk_demand
+        if free_cpu < 0 or free_memory < 0 or free_disk < 0:
+            return 0
+
+        return (
+            (free_cpu / self.cpu) * cpu_weight
+            + (free_memory / self.memory) * memory_weight
+            + (free_disk / self.disk) * disk_weight
+        )
+
+    def capacity_score_if_allocated(self, service: Service, cpu_weight=0.5, memory_weight=0.4, disk_weight=0.1) -> float:
         free_cpu = self.cpu - (self.cpu_demand + service.cpu_demand)
         free_memory = self.memory - (self.memory_demand + service.memory_demand)
         free_disk = self.disk - (self.disk_demand + self._get_disk_demand_delta(service))
