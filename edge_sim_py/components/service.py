@@ -10,7 +10,6 @@ import networkx as nx
 from mesa import Agent
 
 from ..component_manager import ComponentManager
-from ..components import EdgeServer
 from .application import Application
 from .container_image import ContainerImage
 from .container_layer import ContainerLayer
@@ -69,7 +68,7 @@ class Service(ComponentManager, Agent):
         self.state = state
 
         # Server that hosts the service
-        self.server: EdgeServer
+        self.server = None
 
         # Application to whom the service belongs
         self.application: Application
@@ -257,8 +256,8 @@ class Service(ComponentManager, Agent):
 
         self.total_dist_from_users = self.distance_from_edge_server_to_users()
 
-    def distance_from_edge_server_to_users(self, edge_server: EdgeServer | None = None) -> float:
-        edge_server = edge_server if edge_server is not None and isinstance(edge_server, EdgeServer) else self.server
+    def distance_from_edge_server_to_users(self, edge_server=None) -> float:
+        edge_server = edge_server if edge_server is not None else self.server
         total_distance_from_users: float = 0.0
         max_distance: float = 0.0
         if edge_server is not None and len(self.application.users) > 0:
