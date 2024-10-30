@@ -262,13 +262,9 @@ class Service(ComponentManager, Agent):
         max_distance: float = 0.0
         if edge_server is not None and len(self.application.users) > 0:
             for user in self.application.users:
-                curr_distance: float = nx.shortest_path_length(
-                    G=self.model.topology,
-                    source=edge_server.base_station.network_switch,
-                    weight="delay",
-                    method="dijkstra",
-                    target=user.base_station.network_switch,
-                )
+                user_coords = (user.coordinates[0], user.coordinates[1])
+                server_coords = (edge_server.coordinates[0], edge_server.coordinates[1])
+                curr_distance = math.sqrt((user_coords[0] - server_coords[0]) ** 2 + (user_coords[1] - server_coords[1]) ** 2)
                 total_distance_from_users += curr_distance
                 if curr_distance > max_distance:
                     max_distance = curr_distance
