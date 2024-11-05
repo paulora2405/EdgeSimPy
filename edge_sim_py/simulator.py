@@ -282,9 +282,6 @@ class Simulator(ComponentManager, Model):
 
     def step(self):
         """Advances the model's system in one step."""
-        # Running resource management algorithm
-        self.resource_management_algorithm(parameters=self.resource_management_algorithm_parameters)
-
         # Activating agents
         ajusted_step = self.schedule.steps % DAY_CYCLE_IN_MINUTES + DAY_START_IN_MINUTES
         print(
@@ -292,6 +289,9 @@ class Simulator(ComponentManager, Model):
             f"Time: {ajusted_step // 60:02d}:{ajusted_step % 60:02d} "
             f"Day: {self.schedule.steps // DAY_CYCLE_IN_MINUTES + 1} "
         )
+
+        # Running resource management algorithm
+        self.resource_management_algorithm(parameters=self.resource_management_algorithm_parameters)
         self.schedule.step()
 
         # Updating the "current_step" attribute inside the resource management algorithm's parameters
