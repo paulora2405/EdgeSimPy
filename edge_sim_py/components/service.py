@@ -268,7 +268,10 @@ class Service(ComponentManager, Agent):
                 total_distance_from_users += curr_distance
                 if curr_distance > max_distance:
                     max_distance = curr_distance
-            total_distance_from_users = total_distance_from_users / (len(self.application.users) * max_distance)
+            if max_distance > 0.0:
+                total_distance_from_users = total_distance_from_users / (len(self.application.users) * max_distance)
+            else:
+                total_distance_from_users = 0.0
         else:
             total_distance_from_users = 0.0
 

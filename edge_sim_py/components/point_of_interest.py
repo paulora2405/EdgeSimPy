@@ -61,7 +61,7 @@ class PointOfInterest(ComponentManager, Agent):
         current_step: int = self.model.schedule.steps + 1
 
         def is_peak_time():
-            time_of_day_in_minutes = current_step % DAY_CYCLE_IN_MINUTES
+            time_of_day_in_minutes = current_step % DAY_CYCLE_IN_MINUTES + DAY_START_IN_MINUTES
             return time_of_day_in_minutes >= self.peak_start and time_of_day_in_minutes < self.peak_end
 
         # not in peak yet, but this step will start being

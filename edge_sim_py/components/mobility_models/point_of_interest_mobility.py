@@ -18,7 +18,7 @@ def point_of_interest_mobility(user: User):
 
     parameters = getattr(user, "mobility_model_parameters", {})
     # Number of "mobility routines" added each time the method is called. Defaults to 1.
-    n_moves = parameters["n_moves"] if "n_moves" in parameters else 1
+    n_moves = parameters.get("n_moves", 1)
 
     mobility_path = []
 
@@ -36,7 +36,7 @@ def point_of_interest_mobility(user: User):
             x3 = x1 + (x2 - x1) * ratio
             y3 = y1 + (y2 - y1) * ratio
 
-        mobility_path.append((x3, y3))
+        mobility_path.append((int(x3), int(y3)))
 
     # # We assume that users do not necessarily move from one step to another, as one step may represent a very small time interval
     # # (e.g., 1 millisecond). Therefore, each position on the mobility path is repeated N times, so that user takes a predefined
@@ -48,5 +48,5 @@ def point_of_interest_mobility(user: User):
     # mobility_path = [item for item in mobility_path for _ in range(int(seconds_to_move / user.model.tick_duration))]
 
     # Adding the path that connects the current to the target location to the client's mobility trace
-    user.coordinates_trace.extend([loc.coordinates for loc in mobility_path])
+    user.coordinates_trace.extend(mobility_path)
     user.coordinates = user.coordinates_trace[-1]
