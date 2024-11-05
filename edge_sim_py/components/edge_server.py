@@ -163,6 +163,7 @@ class EdgeServer(ComponentManager, Agent):
             "CPU Demand": self.cpu_demand,
             "RAM Demand": self.memory_demand,
             "Disk Demand": self.disk_demand,
+            "Resources Score": self.current_capacity_score(),
             "Ongoing Migrations": self.ongoing_migrations,
             "Services": [service.id for service in self.services],
             "Registries": [registry.id for registry in self.container_registries],

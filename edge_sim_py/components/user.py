@@ -95,6 +95,8 @@ class User(ComponentManager, Agent):
                 "delay_slas": copy.deepcopy(self.delay_slas),
                 "communication_paths": copy.deepcopy(self.communication_paths),
                 "making_requests": copy.deepcopy(self.making_requests),
+                "movement_distance": self.movement_distance,
+                "chance_of_becoming_interested": self.chance_of_becoming_interested,
                 "mobility_model_parameters": (
                     copy.deepcopy(self.mobility_model_parameters) if self.mobility_model_parameters else {}
                 ),
@@ -130,7 +132,7 @@ class User(ComponentManager, Agent):
         metrics = {
             "Instance ID": self.id,
             "Coordinates": self.coordinates,
-            "Coordinates Trace": self.coordinates_trace,
+            "Coordinates Trace": [c for c in self.coordinates_trace],
             "Base Station": f"{self.base_station} ({self.base_station.coordinates})" if self.base_station else None,
             "Delays": copy.deepcopy(self.delays),
             "Communication Paths": copy.deepcopy(self.communication_paths),
@@ -298,11 +300,11 @@ class User(ComponentManager, Agent):
         self.delay_slas[str(app.id)] = delay_sla
         self.delays[str(app.id)] = None
 
-    def _set_initial_position(self, coordinates: list, number_of_replicates: int = 0) -> object:
+    def _set_initial_position(self, coordinates: Tuple[int, int], number_of_replicates: int = 0) -> object:
         """Defines the initial coordinates for the user, automatically connecting to a base station in that position.
 
         Args:
-            coordinates (list): Initial user coordinates.
+            coordinates (Tuple[int, int]): Initial user coordinates.
             number_of_replicates (int, optional): Number of times the initial coordinates will replicated in the coordinates trace. Defaults to 0.
 
         Returns:
