@@ -349,7 +349,9 @@ class Service(ComponentManager, Agent):
         Returns:
             bool: True if the service was recently migrated, False otherwise.
         """
-        if len(self.__migrations) == 0 or self.being_provisioned or self.__migrations[-1]["end"] == None:
+        if self.being_provisioned:
+            return True
+        if len(self.__migrations) == 0 or self.__migrations[-1]["end"] == None:
             return False
 
         return self.model.schedule.steps - self.__migrations[-1]["end"] <= past_steps
