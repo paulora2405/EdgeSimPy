@@ -18,7 +18,7 @@ from .component_manager import ComponentManager
 # the explicit ones are actually used
 from .components import *  # noqa F403
 from .components import NetworkLink, Topology, max_min_fairness
-from .components.point_of_interest import DAY_CYCLE_IN_MINUTES, DAY_START_IN_MINUTES
+from .components.point_of_interest import DAY_CYCLE_IN_MINUTES, DAY_START_IN_MINUTES, step_to_datetime
 
 SUPPORTED_TIME_UNITS = ["seconds", "microseconds", "milliseconds", "minutes"]
 
@@ -283,12 +283,7 @@ class Simulator(ComponentManager, Model):
     def step(self):
         """Advances the model's system in one step."""
         # Activating agents
-        ajusted_step = self.schedule.steps % DAY_CYCLE_IN_MINUTES + DAY_START_IN_MINUTES
-        print(
-            f"Step {self.schedule.steps:05d} "
-            f"Time: {ajusted_step // 60:02d}:{ajusted_step % 60:02d} "
-            f"Day: {self.schedule.steps // DAY_CYCLE_IN_MINUTES + 1} "
-        )
+        print(step_to_datetime(self.schedule.steps))
 
         # Running resource management algorithm
         self.resource_management_algorithm(parameters=self.resource_management_algorithm_parameters)

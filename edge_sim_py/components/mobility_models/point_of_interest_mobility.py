@@ -36,7 +36,7 @@ def point_of_interest_mobility(user: User):
             x3 = x1 + (x2 - x1) * ratio
             y3 = y1 + (y2 - y1) * ratio
 
-        mobility_path.append((int(x3), int(y3)))
+        mobility_path.append((x3, y3))
 
     # # We assume that users do not necessarily move from one step to another, as one step may represent a very small time interval
     # # (e.g., 1 millisecond). Therefore, each position on the mobility path is repeated N times, so that user takes a predefined

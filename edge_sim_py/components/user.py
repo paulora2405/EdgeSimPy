@@ -45,8 +45,8 @@ class User(ComponentManager, Agent):
         self.id = obj_id
 
         # User coordinates
-        self.coordinates_trace: list[Tuple[int, int]] = []
-        self.coordinates: Tuple[int, int] = (0, 0)
+        self.coordinates_trace: list[Tuple[float, float]] = []
+        self.coordinates: Tuple[float, float] = (0.0, 0.0)
 
         # List of applications accessed by the user
         self.applications: list[Application] = []
@@ -74,7 +74,7 @@ class User(ComponentManager, Agent):
         # Custom user mobility attributes
         self.point_of_interest: Optional[PointOfInterest] = None
         self.chance_of_becoming_interested = 100
-        self.movement_distance: int = 0
+        self.movement_distance: float = 0.0
 
     def _to_dict(self) -> dict:
         """Method that overrides the way the object is formatted to JSON."
@@ -133,11 +133,13 @@ class User(ComponentManager, Agent):
             "Instance ID": self.id,
             "Coordinates": self.coordinates,
             "Coordinates Trace": [c for c in self.coordinates_trace],
+            "Point of Interest": self.point_of_interest.name if self.point_of_interest else None,
+            "Applications": [{"class": type(app).__name__, "id": app.id} for app in self.applications],
             "Base Station": f"{self.base_station} ({self.base_station.coordinates})" if self.base_station else None,
             "Delays": copy.deepcopy(self.delays),
             "Communication Paths": copy.deepcopy(self.communication_paths),
-            "Making Requests": copy.deepcopy(self.making_requests),
-            "Access History": copy.deepcopy(access_history),
+            # "Making Requests": copy.deepcopy(self.making_requests),
+            # "Access History": copy.deepcopy(access_history),
         }
         return metrics
 
@@ -155,7 +157,7 @@ class User(ComponentManager, Agent):
             # his application to be provisioned. Access time represents the period in which the user is successfully accessing
             # his application, meaning his application is available. We assume that an application is only available when all its
             # services are available.
-            if self.making_requests[str(app.id)][str(current_step)] == True:
+            if self.making_requests[str(app.id)][str(current_step)] is True:
                 if len([s for s in app.services if s._available]) == len(app.services):
                     last_access["access_time"] += 1
                 else:
@@ -177,11 +179,14 @@ class User(ComponentManager, Agent):
             self.mobility_model(self)
 
         # Updating user's location
-        if self.coordinates != self.coordinates_trace[self.model.schedule.steps]:
+        if (
+            self.model.schedule.steps >= 1
+            and self.coordinates_trace[self.model.schedule.steps] != self.coordinates_trace[self.model.schedule.steps - 1]
+        ):
             self.coordinates = self.coordinates_trace[self.model.schedule.steps]
 
             # Connecting the user to the closest base station
-            self.base_station = BaseStation.find_by(attribute_name="coordinates", attribute_value=self.coordinates)
+            self.base_station = BaseStation.find_by(attribute_name="coordinates", attribute_value=self.rounded_coordinates())  # type: ignore
 
             for application in self.applications:
                 # Only updates the routing path of apps available (i.e., whose services are available)
@@ -192,6 +197,15 @@ class User(ComponentManager, Agent):
                 else:
                     self.communication_paths[str(application.id)] = []
                     self._compute_delay(app=application)
+
+    def rounded_coordinates(self) -> list[int]:
+        """Rounding user coordinates to the integer and hexagonal grid coordinates"""
+        rounded_coordinates: list[int] = [round(self.coordinates[0]), round(self.coordinates[1])]
+        if rounded_coordinates[1] % 2 != 0 and rounded_coordinates[0] % 2 == 0:
+            rounded_coordinates = [rounded_coordinates[0] + 1, rounded_coordinates[1]]
+        elif rounded_coordinates[1] % 2 == 0 and rounded_coordinates[0] % 2 != 0:
+            rounded_coordinates = [rounded_coordinates[0] + 1, rounded_coordinates[1]]
+        return rounded_coordinates
 
     def _compute_delay(self, app: Application, metric: str = "latency") -> int:
         """Computes the delay of an application accessed by the user.
@@ -315,7 +329,7 @@ class User(ComponentManager, Agent):
         self.coordinates_trace = [coordinates for _ in range(number_of_replicates - 1)]
 
         # Connecting the user to the base station that shares his initial position
-        base_station = BaseStation.find_by(attribute_name="coordinates", attribute_value=self.coordinates)
+        base_station: BaseStation = BaseStation.find_by(attribute_name="coordinates", attribute_value=self.rounded_coordinates())  # type: ignore
 
         if base_station is None:
             raise Exception(f"No base station was found at coordinates {coordinates} to connect to user {self}.")
@@ -327,12 +341,12 @@ class User(ComponentManager, Agent):
         """Step logic for point of interest.
 
         Chooses a random point of interest if user doesn't already have one.
-        There is a chance of 40% of not picking any POIs.
+        There is a chance (defined by self.chance_of_becoming_interested) of not picking any POIs.
         If user has POI, but is is not in peak, this method removes it.
         """
         # doesn't have a poi yet
         if self.point_of_interest is None:
-            # Random 60% chance of getting a point of interest
+            # Random chance of getting a point of interest
             if random.randint(0, 100) < self.chance_of_becoming_interested:
                 pois_in_peak = PointOfInterest.all_in_peak()
                 self.point_of_interest = random.choice(pois_in_peak) if len(pois_in_peak) > 0 else None
@@ -340,6 +354,15 @@ class User(ComponentManager, Agent):
         # already has an poi, but it isn't in peak anymore
         elif not self.point_of_interest.is_in_peak:
             self.point_of_interest = None
+
+        # has a poi which is in peak
+        else:
+            # Random chance of becoming desinterested in current poi
+            if (
+                self.point_of_interest.percentage_of_peak_time() > 0.8
+                and random.randint(0, 100) < self.chance_of_becoming_interested
+            ):
+                self.point_of_interest = None
 
     @classmethod
     def random_user_placement(cls, grid_coordinates: list[tuple[int, int]]) -> tuple[int, int]:
