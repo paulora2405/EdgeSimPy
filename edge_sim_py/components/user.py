@@ -186,7 +186,10 @@ class User(ComponentManager, Agent):
             self.coordinates = self.coordinates_trace[self.model.schedule.steps]
 
             # Connecting the user to the closest base station
-            self.base_station = BaseStation.find_by(attribute_name="coordinates", attribute_value=self.rounded_coordinates())  # type: ignore
+            self.base_station = BaseStation.find_by(
+                attribute_name="coordinates",
+                attribute_value=self.rounded_coordinates(),
+            )  # type: ignore
 
             for application in self.applications:
                 # Only updates the routing path of apps available (i.e., whose services are available)
@@ -198,14 +201,14 @@ class User(ComponentManager, Agent):
                     self.communication_paths[str(application.id)] = []
                     self._compute_delay(app=application)
 
-    def rounded_coordinates(self) -> list[int]:
+    def rounded_coordinates(self, return_tuple=False) -> list[int] | tuple[int, int]:
         """Rounding user coordinates to the integer and hexagonal grid coordinates"""
         rounded_coordinates: list[int] = [round(self.coordinates[0]), round(self.coordinates[1])]
         if rounded_coordinates[1] % 2 != 0 and rounded_coordinates[0] % 2 == 0:
             rounded_coordinates = [rounded_coordinates[0] + 1, rounded_coordinates[1]]
         elif rounded_coordinates[1] % 2 == 0 and rounded_coordinates[0] % 2 != 0:
             rounded_coordinates = [rounded_coordinates[0] + 1, rounded_coordinates[1]]
-        return rounded_coordinates
+        return rounded_coordinates if return_tuple is False else tuple(rounded_coordinates)  # type: ignore
 
     def _compute_delay(self, app: Application, metric: str = "latency") -> int:
         """Computes the delay of an application accessed by the user.
@@ -329,7 +332,10 @@ class User(ComponentManager, Agent):
         self.coordinates_trace = [coordinates for _ in range(number_of_replicates - 1)]
 
         # Connecting the user to the base station that shares his initial position
-        base_station: BaseStation = BaseStation.find_by(attribute_name="coordinates", attribute_value=self.rounded_coordinates())  # type: ignore
+        base_station: BaseStation = BaseStation.find_by(
+            attribute_name="coordinates",
+            attribute_value=self.rounded_coordinates(return_tuple=isinstance(BaseStation.first().coordinates, tuple)),  # type: ignore
+        )  # type: ignore
 
         if base_station is None:
             raise Exception(f"No base station was found at coordinates {coordinates} to connect to user {self}.")
