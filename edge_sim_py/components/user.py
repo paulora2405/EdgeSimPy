@@ -190,6 +190,17 @@ class User(ComponentManager, Agent):
                 attribute_name="coordinates",
                 attribute_value=self.rounded_coordinates(),
             )  # type: ignore
+            if self.base_station is None:
+                self.base_station = BaseStation.find_by(
+                    attribute_name="coordinates",
+                    attribute_value=self.rounded_coordinates(minus_offset=True),
+                )  # type: ignore
+            if self.base_station is None:
+                raise Exception(
+                    f"No base station was found at coordinates {self.coordinates}, "
+                    + f"rounded to ({self.rounded_coordinates()}) or ({self.rounded_coordinates(minus_offset=True)}), "
+                    + f"to connect to user {self}.",
+                )
 
             for application in self.applications:
                 # Only updates the routing path of apps available (i.e., whose services are available)
@@ -201,13 +212,14 @@ class User(ComponentManager, Agent):
                     self.communication_paths[str(application.id)] = []
                     self._compute_delay(app=application)
 
-    def rounded_coordinates(self, return_tuple=False) -> list[int] | tuple[int, int]:
+    def rounded_coordinates(self, return_tuple=False, minus_offset=False) -> list[int] | tuple[int, int]:
         """Rounding user coordinates to the integer and hexagonal grid coordinates"""
+        offset = -1 if minus_offset else 1
         rounded_coordinates: list[int] = [round(self.coordinates[0]), round(self.coordinates[1])]
         if rounded_coordinates[1] % 2 != 0 and rounded_coordinates[0] % 2 == 0:
-            rounded_coordinates = [rounded_coordinates[0] + 1, rounded_coordinates[1]]
+            rounded_coordinates = [rounded_coordinates[0] + offset, rounded_coordinates[1]]
         elif rounded_coordinates[1] % 2 == 0 and rounded_coordinates[0] % 2 != 0:
-            rounded_coordinates = [rounded_coordinates[0] + 1, rounded_coordinates[1]]
+            rounded_coordinates = [rounded_coordinates[0] + offset, rounded_coordinates[1]]
         return rounded_coordinates if return_tuple is False else tuple(rounded_coordinates)  # type: ignore
 
     def _compute_delay(self, app: Application, metric: str = "latency") -> int:
