@@ -130,9 +130,9 @@ class User(ComponentManager, Agent):
             access_history[str(app.id)] = self.access_patterns[str(app.id)].history
 
         metrics = {
-            "Instance ID": self.id,
+            # "Instance ID": self.id,
             "Coordinates": self.coordinates,
-            "Coordinates Trace": [c for c in self.coordinates_trace],
+            # "Coordinates Trace": [c for c in self.coordinates_trace],
             "Point of Interest": self.point_of_interest.name if self.point_of_interest else None,
             "Applications": [{"class": type(app).__name__, "id": app.id} for app in self.applications],
             "Base Station": f"{self.base_station} ({self.base_station.coordinates})" if self.base_station else None,

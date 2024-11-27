@@ -1,13 +1,13 @@
-""" Contains network-switch-related functionality."""
+"""Contains network-switch-related functionality."""
 
 # EdgeSimPy components
-from ..component_manager import ComponentManager
+# Python libraries
+import copy
 
 # Mesa modules
 from mesa import Agent
 
-# Python libraries
-import copy
+from ..component_manager import ComponentManager
 
 
 class NetworkSwitch(ComponentManager, Agent):
@@ -89,8 +89,8 @@ class NetworkSwitch(ComponentManager, Agent):
             metrics (dict): Object metrics.
         """
         metrics = {
-            "Instance ID": self.id,
-            "Power Consumption": self.get_power_consumption(),
+            # "Instance ID": self.id,
+            # "Power Consumption": self.get_power_consumption(),
         }
         return metrics
 
