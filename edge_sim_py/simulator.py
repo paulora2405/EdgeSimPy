@@ -7,7 +7,7 @@ from typing import Callable
 from urllib.parse import urlparse
 from urllib.request import urlopen
 
-import msgpack
+import pandas as pd
 from mesa import Agent, Model
 
 # EdgeSimPy components
@@ -335,10 +335,10 @@ class Simulator(ComponentManager, Model):
                 os.makedirs(f"{self.logs_directory}")
 
             for key, value in self.agent_metrics.items():
-                with open(f"{self.logs_directory}/{key}.msgpack", "wb") as output_file:
-                    output_file.write(msgpack.packb(value))
+                df = pd.DataFrame(value)
+                df.to_csv(f"{self.logs_directory}/{key}.csv", index=False)
 
-                if clean_data_in_memory:
+                if clean_data_in_memory:  # This does not work, dict.items() returns a view into the dict
                     value = []
 
     def initialize_agent(self, agent: object) -> object:
