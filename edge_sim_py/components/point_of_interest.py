@@ -18,11 +18,7 @@ def step_to_datetime(step: int) -> str:
     time_of_day_in_minutes = step % DAY_CYCLE_IN_MINUTES + DAY_START_IN_MINUTES
     hours = time_of_day_in_minutes // 60
     minutes = time_of_day_in_minutes % 60
-    return (
-        f"Step {step:05d} "
-        + f"Time: {hours:02d}:{minutes % 60:02d} "
-        + f"Day: {time_of_day_in_minutes // DAY_CYCLE_IN_MINUTES + 1} "
-    )
+    return f"Step {step:05d} Time: {hours:02d}:{minutes % 60:02d} Day: {step // DAY_CYCLE_IN_MINUTES + 1}"
 
 
 class PointOfInterest(ComponentManager, Agent):
